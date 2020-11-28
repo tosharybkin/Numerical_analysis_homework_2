@@ -13,9 +13,9 @@ def RK2(x, y, u, step) -> np.array:
 
     denominator_y = 1 - ((3 + (sqrt(3)))/6) * step * (C1_1 + C1_2)
     denominator_u = 1 - ((3 + (sqrt(3)))/6) * step * (C2_1 + C2_2)
-    k1_y = (y * C1_1 + u * C1_2)/denominator_y 
+    k1_y = (y * C1_1 + u * C1_2)/denominator_y
     k1_u = (y * C2_1 + u * C2_2)/denominator_u
-    k2_y = (y * C1_1 + u * C1_2 + C1_1 * step * (-1) * ((sqrt(3))/3) * k1_y + C1_2 * step * (-1) * ((sqrt(3))/3) * k1_y )/denominator_y 
+    k2_y = (y * C1_1 + u * C1_2 + C1_1 * step * (-1) * ((sqrt(3))/3) * k1_y + C1_2 * step * (-1) * ((sqrt(3))/3) * k1_y )/denominator_y
     k2_u = (y * C2_1 + u * C2_2 + C2_1 * step * (-1) * ((sqrt(3))/3) * k1_u + C2_2 * step * (-1) * ((sqrt(3))/3) * k1_u )/denominator_u
 
     x_next = x + step
@@ -43,9 +43,9 @@ def main() -> None:
 
 
     while True:
-        
+
         x, y, u = RK2(x, y, u, step)
-                
+
         xs = np.append(xs, [x])
         ys = np.append(ys, [y])
         us = np.append(us, [u])
