@@ -51,7 +51,7 @@ class Main_window(QtWidgets.QMainWindow):
             u_1 = -3 * np.exp(-1000 * x_curr) + 10 * np.exp(-x_curr / 100)
             u_2 = 3 * np.exp(-1000 * x_curr) + 10 * np.exp(-x_curr / 100)
 
-            self.progress_bar.setValue((x_curr / x_max) * 100)
+            self.progress_bar.setValue(int((x_curr / x_max) * 100))
 
             xs = np.append(xs, x_curr)
             v_1s = np.append(v_1s, v_1)
