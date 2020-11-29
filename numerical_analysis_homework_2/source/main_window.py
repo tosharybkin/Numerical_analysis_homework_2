@@ -1,9 +1,10 @@
 import sys, os
 import numpy as np
-from PyQt5 import QtGui, QtWidgets, uic
+from PyQt5 import QtGui, QtWidgets, QtCore, uic
+from PyQt5.QtGui import QPixmap
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from Integrator.integrator import Integrator
-
+from worker import Worker
 
 class Main_window(QtWidgets.QMainWindow):
     def __init__(self) -> None:
@@ -24,53 +25,71 @@ class Main_window(QtWidgets.QMainWindow):
             + "resources"
             + os.path.sep
             + "icon.png"))
-        self.progress_bar.setValue(0)
+        pixmap = QPixmap(
+            os.path.abspath(os.path.join(script_dir, os.pardir))  # Parent directory
+            + os.path.sep
+            + "resources"
+            + os.path.sep
+            + "system.png"
+        )
+
+        #pixmap = pixmap.scaled(400, 400, aspectRatioMode=QtCore.Qt.KeepAspectRatio)
+        self.system_label.setPixmap(pixmap)
+        self.system_label.setMask(pixmap.mask())
+        self.threadpool = QtCore.QThreadPool()
+        self.row_index = 0
 
         self.plot_btn.clicked.connect(self.on_plot_btn_click)
 
-    def on_plot_btn_click(self) -> None:
-        step = float(self.step_text_box.text())
-        x_max = float(self.x_max_text_box.text())
+    def update_progress_bar(self, value):
+        self.progress_bar.setValue(value)
 
-        xs   = np.array([], dtype=np.longdouble)
-        v_1s = np.array([], dtype=np.longdouble)
-        v_2s = np.array([], dtype=np.longdouble)
-        u_1s = np.array([], dtype=np.longdouble)
-        u_2s = np.array([], dtype=np.longdouble)
+    def insert_table_row(self, row_index, row):
+        self.table.insertRow(row_index)
+        self.row_index = row_index
 
-        x_curr = 0
-        v_1 = 7
-        v_2 = 13
-        u_1 = 7
-        u_2 = 13
+        for index, item in enumerate(row):
+            self.table.setItem(row_index, index, QtWidgets.QTableWidgetItem(
+                f"{item:.6e}"))
 
-        integrator = Integrator(step)
-
-        while x_curr < x_max:
-            x_curr, v_1, v_2 = integrator.next_point(x_curr, v_1, v_2)
-            u_1 = -3 * np.exp(-1000 * x_curr) + 10 * np.exp(-x_curr / 100)
-            u_2 = 3 * np.exp(-1000 * x_curr) + 10 * np.exp(-x_curr / 100)
-
-            self.progress_bar.setValue((x_curr / x_max) * 100)
-
-            xs = np.append(xs, x_curr)
-            v_1s = np.append(v_1s, v_1)
-            v_2s = np.append(v_2s, v_2)
-            u_1s = np.append(u_1s, u_1)
-            u_2s = np.append(u_2s, u_2)
-
+    def thread_complete(self, points_to_plot):
         self.plot.canvas.axes[0].clear()
-        self.plot.canvas.axes[0].plot(xs, v_1s)
-        self.plot.canvas.axes[0].plot(xs, v_2s)
-        self.plot.canvas.axes[1].clear()
-        self.plot.canvas.axes[1].plot(xs, u_1s)
-        self.plot.canvas.axes[1].plot(xs, u_2s)
+        self.plot.canvas.axes[0].plot(points_to_plot.xs, points_to_plot.v_1s)
+        self.plot.canvas.axes[0].plot(points_to_plot.xs, points_to_plot.v_2s)
+        self.plot.canvas.axes[0].legend(('v_1(x)', 'v_2(x)'),loc='upper right')
+        self.plot.canvas.axes[0].set_title('Численное решение')
+        self.plot.canvas.axes[0].set_xlabel("x")
+        self.plot.canvas.axes[0].set_ylabel("v_1(x)/v_2(x)")
 
+        self.plot.canvas.axes[1].clear()
+        self.plot.canvas.axes[1].plot(points_to_plot.xs, points_to_plot.u_1s)
+        self.plot.canvas.axes[1].plot(points_to_plot.xs, points_to_plot.u_2s)
+        self.plot.canvas.axes[1].legend(('u_1(x)', 'u_2(x)'),loc='upper right')
+        self.plot.canvas.axes[1].set_title('Истинное решение')
+        self.plot.canvas.axes[1].set_xlabel("x")
+        self.plot.canvas.axes[1].set_ylabel("u_1(x)/u_2(x)")
 
         self.plot.canvas.draw()
 
+        self.table.setVerticalHeaderLabels((str(i) for i in range(self.row_index + 1)))
 
+    def on_plot_btn_click(self) -> None:
 
+        # Clear output table
+        while (self.table.rowCount() > 0):
+                self.table.removeRow(0)
+
+        step = float(self.step_text_box.text())
+        x_max = float(self.x_max_text_box.text())
+        eps = float(self.eps_text_box.text())
+        step_control_flag = self.step_control_check_box.isChecked()
+
+        worker = Worker(step, x_max, eps, step_control_flag)
+        worker.signals.finished.connect(self.thread_complete)
+        worker.signals.progress.connect(self.update_progress_bar)
+        worker.signals.insert_table_row.connect(self.insert_table_row)
+
+        self.threadpool.start(worker)
 
 
 def main() -> None:
