@@ -1,6 +1,7 @@
 import sys, os
 import numpy as np
 from PyQt5 import QtGui, QtWidgets, QtCore, uic
+from PyQt5.QtGui import QPixmap
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from Integrator.integrator import Integrator
 from worker import Worker
@@ -24,6 +25,17 @@ class Main_window(QtWidgets.QMainWindow):
             + "resources"
             + os.path.sep
             + "icon.png"))
+        pixmap = QPixmap(
+            os.path.abspath(os.path.join(script_dir, os.pardir))  # Parent directory
+            + os.path.sep
+            + "resources"
+            + os.path.sep
+            + "system.png"
+        )
+
+        #pixmap = pixmap.scaled(400, 400, aspectRatioMode=QtCore.Qt.KeepAspectRatio)
+        self.system_label.setPixmap(pixmap)
+        self.system_label.setMask(pixmap.mask())
         self.threadpool = QtCore.QThreadPool()
         self.row_index = 0
 
