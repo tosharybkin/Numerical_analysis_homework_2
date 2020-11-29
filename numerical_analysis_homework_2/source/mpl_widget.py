@@ -1,6 +1,9 @@
 from PyQt5 import QtWidgets
 from matplotlib.backends.backend_qt5agg import FigureCanvas
 from matplotlib.figure import Figure
+import matplotlib.pyplot as plt
+
+plt.style.use('dark_background')
 
 
 class Mpl_widget(QtWidgets.QWidget):
