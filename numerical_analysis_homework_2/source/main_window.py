@@ -25,28 +25,57 @@ class Main_window(QtWidgets.QMainWindow):
             + os.path.sep
             + "icon.png"))
         self.threadpool = QtCore.QThreadPool()
+        self.row_index = 0
 
         self.plot_btn.clicked.connect(self.on_plot_btn_click)
 
     def update_progress_bar(self, value):
         self.progress_bar.setValue(value)
 
+    def insert_table_row(self, row_index, row):
+        self.table.insertRow(row_index)
+        self.row_index = row_index
+
+        for index, item in enumerate(row):
+            self.table.setItem(row_index, index, QtWidgets.QTableWidgetItem(
+                f"{item:.6e}"))
+
     def thread_complete(self, points_to_plot):
         self.plot.canvas.axes[0].clear()
         self.plot.canvas.axes[0].plot(points_to_plot.xs, points_to_plot.v_1s)
         self.plot.canvas.axes[0].plot(points_to_plot.xs, points_to_plot.v_2s)
+        self.plot.canvas.axes[0].legend(('v_1(x)', 'v_2(x)'),loc='upper right')
+        self.plot.canvas.axes[0].set_title('Численное решение')
+        self.plot.canvas.axes[0].set_xlabel("x")
+        self.plot.canvas.axes[0].set_ylabel("v_1(x)/v_2(x)")
+
         self.plot.canvas.axes[1].clear()
         self.plot.canvas.axes[1].plot(points_to_plot.xs, points_to_plot.u_1s)
         self.plot.canvas.axes[1].plot(points_to_plot.xs, points_to_plot.u_2s)
+        self.plot.canvas.axes[1].legend(('u_1(x)', 'u_2(x)'),loc='upper right')
+        self.plot.canvas.axes[1].set_title('Истинное решение')
+        self.plot.canvas.axes[1].set_xlabel("x")
+        self.plot.canvas.axes[1].set_ylabel("u_1(x)/u_2(x)")
 
         self.plot.canvas.draw()
 
+        self.table.setVerticalHeaderLabels((str(i) for i in range(self.row_index + 1)))
+
     def on_plot_btn_click(self) -> None:
+
+        # Clear output table
+        while (self.table.rowCount() > 0):
+                self.table.removeRow(0)
+
         step = float(self.step_text_box.text())
         x_max = float(self.x_max_text_box.text())
-        worker = Worker(step, x_max)
+        eps = float(self.eps_text_box.text())
+        step_control_flag = self.step_control_check_box.isChecked()
+
+        worker = Worker(step, x_max, eps, step_control_flag)
         worker.signals.finished.connect(self.thread_complete)
         worker.signals.progress.connect(self.update_progress_bar)
+        worker.signals.insert_table_row.connect(self.insert_table_row)
 
         self.threadpool.start(worker)
 

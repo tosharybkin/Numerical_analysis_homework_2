@@ -21,7 +21,46 @@
     <property name="rightMargin">
      <number>15</number>
     </property>
+    <item row="6" column="1">
+     <widget class="QLineEdit" name="x_max_text_box">
+      <property name="maximumSize">
+       <size>
+        <width>80</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>10</string>
+      </property>
+      <property name="placeholderText">
+       <string>10</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0" colspan="6">
+     <widget class="QProgressBar" name="progress_bar">
+      <property name="value">
+       <number>0</number>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
     <item row="4" column="0">
+     <widget class="QLabel" name="label">
+      <property name="maximumSize">
+       <size>
+        <width>35</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:11pt;&quot;&gt;Шаг&lt;/span&gt;&lt;span style=&quot; font-size:11pt; vertical-align:sub;&quot;&gt;0&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="0">
      <widget class="QLabel" name="label_2">
       <property name="maximumSize">
        <size>
@@ -34,43 +73,7 @@
       </property>
      </widget>
     </item>
-    <item row="1" column="0" colspan="4">
-     <widget class="QProgressBar" name="progress_bar">
-      <property name="value">
-       <number>0</number>
-      </property>
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="0">
-     <widget class="QLabel" name="label">
-      <property name="maximumSize">
-       <size>
-        <width>35</width>
-        <height>16777215</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:11pt;&quot;&gt;Step&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="2">
-     <widget class="QPushButton" name="plot_btn">
-      <property name="maximumSize">
-       <size>
-        <width>80</width>
-        <height>16777215</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>Plot!</string>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="0" colspan="4">
+    <item row="0" column="0" colspan="6">
      <widget class="Mpl_widget" name="plot" native="true">
       <property name="minimumSize">
        <size>
@@ -86,7 +89,72 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="4">
+    <item row="4" column="1">
+     <widget class="QLineEdit" name="step_text_box">
+      <property name="maximumSize">
+       <size>
+        <width>80</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>0.001</string>
+      </property>
+      <property name="placeholderText">
+       <string>0.001</string>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="0">
+     <widget class="QLabel" name="label_3">
+      <property name="maximumSize">
+       <size>
+        <width>20</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-family:'sans-serif'; font-size:15pt; font-style:italic; color:#202122;&quot;&gt;ε&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="1">
+     <widget class="QLineEdit" name="eps_text_box">
+      <property name="maximumSize">
+       <size>
+        <width>80</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>0.0001</string>
+      </property>
+      <property name="placeholderText">
+       <string>0.0001</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="2">
+     <widget class="QCheckBox" name="step_control_check_box">
+      <property name="text">
+       <string>Контроль шага</string>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="2">
+     <widget class="QPushButton" name="plot_btn">
+      <property name="maximumSize">
+       <size>
+        <width>80</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Построить!</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="6" rowspan="2">
      <widget class="QTableWidget" name="table">
       <property name="maximumSize">
        <size>
@@ -142,38 +210,6 @@
         <string>exp(-1000*x)</string>
        </property>
       </column>
-     </widget>
-    </item>
-    <item row="3" column="1">
-     <widget class="QLineEdit" name="step_text_box">
-      <property name="maximumSize">
-       <size>
-        <width>80</width>
-        <height>16777215</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>0.001</string>
-      </property>
-      <property name="placeholderText">
-       <string>0.001</string>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="1">
-     <widget class="QLineEdit" name="x_max_text_box">
-      <property name="maximumSize">
-       <size>
-        <width>80</width>
-        <height>16777215</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>10</string>
-      </property>
-      <property name="placeholderText">
-       <string>10</string>
-      </property>
      </widget>
     </item>
    </layout>
