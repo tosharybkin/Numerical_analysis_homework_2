@@ -13,26 +13,16 @@ class Integrator:
         c_2_1 =  499.995
         c_2_2 = -500.005
 
-        denominator_y = 1 - ((3 + (np.sqrt(3))) / 6) * step * (c_1_1 + c_1_2)
-        denominator_u = 1 - ((3 + (np.sqrt(3))) / 6) * step * (c_2_1 + c_2_2)
-        k1_y = (v_1 * c_1_1 + v_2 * c_1_2) / denominator_y
-        k1_u = (v_1 * c_2_1 + v_2 * c_2_2) / denominator_u
-        k2_y = (
-            v_1 * c_1_1
-            + v_2 * c_1_2
-            + c_1_1 * step * (-1) * ((np.sqrt(3)) / 3) * k1_y
-            + c_1_2 * step * (-1) * ((np.sqrt(3)) / 3) * k1_y
-        ) / denominator_y
-        k2_u = (
-            v_1 * c_2_1
-            + v_2 * c_2_2
-            + c_2_1 * step * (-1) * ((np.sqrt(3)) / 3) * k1_u
-            + c_2_2 * step * (-1) * ((np.sqrt(3)) / 3) * k1_u
-        ) / denominator_u
+        k1_1 = c_1_1 * v_1 + c_1_2 * v_2
+        k1_2 = c_2_1 * v_1 + c_2_2 * v_2
+        k2_1 = c_1_1 * (v_1 + (step/3) * k1_1) + c_1_2 * (v_2 + (step/3) * k1_2)
+        k2_2 = c_2_1 * (v_1 + (step/3) * k1_1) + c_2_2 * (v_2 + (step/3) * k1_2)
+        k3_1 = c_1_1 * (v_1 + (2 * step/3) * k2_1) + c_1_2 * (v_2 + (2 * step/3) * k2_2)
+        k3_2 = c_2_1 * (v_1 + (2 * step/3) * k2_1) + c_2_2 * (v_2 + (2 * step/3) * k2_2)
 
         x_next = x + step
-        v_1_next = v_1 + (step / 2) * (k1_y + k2_y)
-        v_2_next = v_2 + (step / 2) * (k1_u + k2_u)
+        v_1_next = v_1 + (step/4) * (k1_1 + 3 * k3_1)
+        v_2_next = v_2 + (step/4) * (k1_2 + 3 * k3_2)
 
         return np.array([x_next, v_1_next, v_2_next], dtype=np.longdouble)
 

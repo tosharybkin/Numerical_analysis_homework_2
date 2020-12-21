@@ -39,6 +39,7 @@ class Main_window(QtWidgets.QMainWindow):
         self.system_label.setMask(pixmap.mask())
         self.threadpool = QtCore.QThreadPool()
         self.row_index = 0
+        self.max_delta_u_v = 0
 
         self.plot_btn.clicked.connect(self.on_plot_btn_click)
 
@@ -52,6 +53,9 @@ class Main_window(QtWidgets.QMainWindow):
         for index, item in enumerate(row):
             self.table.setItem(row_index, index, QtWidgets.QTableWidgetItem(
                 f"{item:.6e}"))
+
+        if (delta_u_v := max(row[5], row[6])) > self.max_delta_u_v:
+            self.max_delta_u_v = delta_u_v
 
     def thread_complete(self, points_to_plot):
         self.plot.canvas.axes[0].clear()
@@ -72,9 +76,12 @@ class Main_window(QtWidgets.QMainWindow):
 
         self.plot.canvas.draw()
 
+        self.max_delta_u_v_lbl.setText(f"{self.max_delta_u_v:.6e}")
         self.table.setVerticalHeaderLabels((str(i) for i in range(self.row_index + 1)))
 
     def on_plot_btn_click(self) -> None:
+
+        self.max_delta_u_v = 0
 
         # Clear output table
         while (self.table.rowCount() > 0):
